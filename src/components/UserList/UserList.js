@@ -8,6 +8,17 @@ import * as S from "./style";
 
 const UserList = ({ users, isLoading }) => {
   const [hoveredUserId, setHoveredUserId] = useState();
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [filterCountries, setFilterCountries] = useState([]);
+  const [favorites, setFavorites] = useState([]);
+
+  useEffect(() => {
+  }, []);
+
+  useEffect(() => {
+    if (!filterCountries.length) setFilteredUsers([...users]);
+    else setFilteredUsers(users.filter(user => filterCountries.indexOf(user.location.country) !== -1));
+  }, [filterCountries, users]);
 
   const handleMouseEnter = (index) => {
     setHoveredUserId(index);
@@ -17,16 +28,31 @@ const UserList = ({ users, isLoading }) => {
     setHoveredUserId();
   };
 
+  const handleCheckboxClicked = (value) => {
+    console.log(value);
+    if (filterCountries.find(country => country === value)) {
+      console.log(1);
+      setFilterCountries(state => state.filter(country => country !== value));
+    } else {
+      console.log(2);
+      setFilterCountries([...filterCountries, value]);
+    }
+  };
+
+  const toggleFavorite = (user) => {
+  };
+
   return (
     <S.UserList>
       <S.Filters>
-        <CheckBox value="BR" label="Brazil" />
-        <CheckBox value="AU" label="Australia" />
-        <CheckBox value="CA" label="Canada" />
-        <CheckBox value="DE" label="Germany" />
+        <CheckBox onChange={handleCheckboxClicked} value="Brazil" label="Brazil" />
+        <CheckBox onChange={handleCheckboxClicked} value="Australia" label="Australia" />
+        <CheckBox onChange={handleCheckboxClicked} value="Canada" label="Canada" />
+        <CheckBox onChange={handleCheckboxClicked} value="Germany" label="Germany" />
+        <CheckBox onChange={handleCheckboxClicked} value="France" label="France" />
       </S.Filters>
       <S.List>
-        {users.map((user, index) => {
+        {filteredUsers.map((user, index) => {
           return (
             <S.User
               key={index}
@@ -46,8 +72,11 @@ const UserList = ({ users, isLoading }) => {
                   {user?.location.city} {user?.location.country}
                 </Text>
               </S.UserInfo>
-              <S.IconButtonWrapper isVisible={index === hoveredUserId}>
-                <IconButton>
+              <S.IconButtonWrapper
+                isVisible={index === hoveredUserId || favorites.some(favoriteUser => favoriteUser.cell === user.cell)}>
+                <IconButton onClick={() => {
+                  toggleFavorite(user);
+                }}>
                   <FavoriteIcon color="error" />
                 </IconButton>
               </S.IconButtonWrapper>
