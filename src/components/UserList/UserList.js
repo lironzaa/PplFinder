@@ -5,51 +5,40 @@ import CheckBox from "components/CheckBox";
 import IconButton from "@material-ui/core/IconButton";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import * as S from "./style";
+import { favoriteService } from "../../services/favoriteService";
 
 const UserList = ({ users, isLoading }) => {
   const [hoveredUserId, setHoveredUserId] = useState();
   const [filteredUsers, setFilteredUsers] = useState([]);
-  const [filterCountries, setFilterCountries] = useState([]);
+  const [filteredCountries, setFilteredCountries] = useState([]);
   const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
-  }, []);
+    if (!filteredCountries.length) setFilteredUsers([...users]);
+    else setFilteredUsers(users.filter(user => filteredCountries.indexOf(user.location.country) !== -1));
+  }, [filteredCountries, users]);
 
-  useEffect(() => {
-    if (!filterCountries.length) setFilteredUsers([...users]);
-    else setFilteredUsers(users.filter(user => filterCountries.indexOf(user.location.country) !== -1));
-  }, [filterCountries, users]);
+  const handleMouseEnter = index => setHoveredUserId(index);
 
-  const handleMouseEnter = (index) => {
-    setHoveredUserId(index);
+  const handleMouseLeave = () => setHoveredUserId();
+
+  const onCheckboxClicked = (selectedCountry, isChecked) => {
+    if (isChecked) setFilteredCountries([...filteredCountries, selectedCountry]);
+    else setFilteredCountries(filteredCountries => filteredCountries.filter(country => country !== selectedCountry));
   };
 
-  const handleMouseLeave = () => {
-    setHoveredUserId();
-  };
+  const toggleFavorite = selectedUser => setFavorites(favoriteService.toggleFavorite(selectedUser));
 
-  const handleCheckboxClicked = (value) => {
-    console.log(value);
-    if (filterCountries.find(country => country === value)) {
-      console.log(1);
-      setFilterCountries(state => state.filter(country => country !== value));
-    } else {
-      console.log(2);
-      setFilterCountries([...filterCountries, value]);
-    }
-  };
-
-  const toggleFavorite = (user) => {
-  };
+  const isOnFavorites = userId => favorites.some(favoriteUser => favoriteUser.login.uuid === userId);
 
   return (
     <S.UserList>
       <S.Filters>
-        <CheckBox onChange={handleCheckboxClicked} value="Brazil" label="Brazil" />
-        <CheckBox onChange={handleCheckboxClicked} value="Australia" label="Australia" />
-        <CheckBox onChange={handleCheckboxClicked} value="Canada" label="Canada" />
-        <CheckBox onChange={handleCheckboxClicked} value="Germany" label="Germany" />
-        <CheckBox onChange={handleCheckboxClicked} value="France" label="France" />
+        <CheckBox onChange={onCheckboxClicked} value="Brazil" label="Brazil" />
+        <CheckBox onChange={onCheckboxClicked} value="Australia" label="Australia" />
+        <CheckBox onChange={onCheckboxClicked} value="Canada" label="Canada" />
+        <CheckBox onChange={onCheckboxClicked} value="Germany" label="Germany" />
+        <CheckBox onChange={onCheckboxClicked} value="France" label="France" />
       </S.Filters>
       <S.List>
         {filteredUsers.map((user, index) => {
@@ -57,8 +46,7 @@ const UserList = ({ users, isLoading }) => {
             <S.User
               key={index}
               onMouseEnter={() => handleMouseEnter(index)}
-              onMouseLeave={handleMouseLeave}
-            >
+              onMouseLeave={handleMouseLeave}>
               <S.UserPicture src={user?.picture.large} alt="" />
               <S.UserInfo>
                 <Text size="22px" bold>
@@ -73,10 +61,8 @@ const UserList = ({ users, isLoading }) => {
                 </Text>
               </S.UserInfo>
               <S.IconButtonWrapper
-                isVisible={index === hoveredUserId || favorites.some(favoriteUser => favoriteUser.cell === user.cell)}>
-                <IconButton onClick={() => {
-                  toggleFavorite(user);
-                }}>
+                isVisible={index === hoveredUserId || isOnFavorites(user.login.uuid)}>
+                <IconButton onClick={() => toggleFavorite(user)}>
                   <FavoriteIcon color="error" />
                 </IconButton>
               </S.IconButtonWrapper>
