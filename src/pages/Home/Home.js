@@ -6,7 +6,7 @@ import * as S from "./style";
 import { favoriteService } from "../../services/favoriteService";
 
 const Home = () => {
-  const { users, isLoading } = usePeopleFetch();
+  const { users, isLoading, updatePageNumber } = usePeopleFetch();
   const [ favorites, setFavorites ] = useState([]);
 
   const toggleFavorite = selectedUser => setFavorites(favoriteService.toggleFavorite(selectedUser));
@@ -22,7 +22,7 @@ const Home = () => {
           </Text>
         </S.Header>
         <UserList users={users} isLoading={isLoading} isFavoritesList={false}
-                  toggleFavorite={toggleFavorite} isOnFavorites={isOnFavorites} />
+                  toggleFavorite={toggleFavorite} isOnFavorites={isOnFavorites} updatePageNumber={updatePageNumber} />
       </S.Content>
     </S.Home>
   );

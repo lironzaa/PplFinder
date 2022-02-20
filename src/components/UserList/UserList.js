@@ -6,7 +6,15 @@ import IconButton from "@material-ui/core/IconButton";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import * as S from "./style";
 
-const UserList = ({ users, isLoading, isFavoritesList, removeFavorite, toggleFavorite, isOnFavorites }) => {
+const UserList = ({
+                    users,
+                    isLoading,
+                    isFavoritesList,
+                    removeFavorite,
+                    toggleFavorite,
+                    isOnFavorites,
+                    updatePageNumber
+                  }) => {
   const [ hoveredUserId, setHoveredUserId ] = useState();
   const [ filteredUsers, setFilteredUsers ] = useState([]);
   const [ filteredCountries, setFilteredCountries ] = useState([]);
@@ -25,6 +33,11 @@ const UserList = ({ users, isLoading, isFavoritesList, removeFavorite, toggleFav
     else setFilteredCountries(filteredCountries => filteredCountries.filter(country => country !== selectedCountry));
   };
 
+  const handleScroll = event => {
+    let isBottomPage = event.target.scrollHeight - event.target.scrollTop === event.target.clientHeight;
+    if (!isFavoritesList && isBottomPage && !filteredCountries.length) updatePageNumber();
+  };
+
   return (
     <S.UserList>
       <S.Filters>
@@ -34,7 +47,7 @@ const UserList = ({ users, isLoading, isFavoritesList, removeFavorite, toggleFav
         <CheckBox onChange={onCheckboxClicked} value="Germany" label="Germany" />
         <CheckBox onChange={onCheckboxClicked} value="France" label="France" />
       </S.Filters>
-      <S.List>
+      <S.List onScroll={handleScroll}>
         {filteredUsers.map((user, index) => {
           return (
             <S.User
