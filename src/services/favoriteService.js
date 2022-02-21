@@ -1,12 +1,12 @@
 let favorites = loadFromStorage("favorites") ? loadFromStorage("favorites") : [];
 
 function getFavorites() {
-  return [...favorites];
+  return [ ...favorites ];
 }
 
 function toggleFavorite(user) {
   if (favorites.some(favoriteUser => favoriteUser.login.uuid === user.login.uuid)) favorites = favorites.filter(favoriteUser => favoriteUser.login.uuid !== user.login.uuid);
-  else favorites = [...favorites, user];
+  else favorites = [ ...favorites, user ];
   saveToStorage("favorites", favorites);
   return favorites;
 }
@@ -14,6 +14,11 @@ function toggleFavorite(user) {
 function removeFavorite(userId) {
   favorites = favorites.filter(favoriteUser => favoriteUser.login.uuid !== userId);
   saveToStorage("favorites", favorites);
+  return favorites;
+}
+
+function clearFavorites() {
+  saveToStorage("favorites", favorites = []);
   return favorites;
 }
 
@@ -28,5 +33,6 @@ function loadFromStorage(key) {
 export const favoriteService = {
   getFavorites,
   toggleFavorite,
-  removeFavorite
+  removeFavorite,
+  clearFavorites
 };

@@ -1,17 +1,20 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AppBar from "@material-ui/core/AppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import { Link } from "react-router-dom";
-import { Route } from "react-router";
+import { Route, useHistory } from "react-router";
 
 const NavBar = () => {
-  const [value, setValue] = useState(0);
-  const allTabs = ["/", "/favorites"];
+  const [ value, setValue ] = useState(0);
+  const allTabs = [ "/", "/favorites" ];
+  const history = useHistory();
 
-  const handleChange = (_e, selectedTab) => {
-    setValue(selectedTab);
-  };
+  useEffect(() => {
+    if (history.location.pathname.includes("favorites")) handleChange(null, 1);
+  }, []);
+
+  const handleChange = (_e, selectedTab) => setValue(selectedTab);
 
   return (
     <Route>

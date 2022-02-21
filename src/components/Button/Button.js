@@ -3,16 +3,19 @@ import { Button as MuiButton } from "@material-ui/core";
 import * as C from "constant";
 
 const Button = ({
-  label,
-  color = C.COLORS.default,
-  disabled,
-  size = C.SIZE.medium,
-  variant = C.VARIANT.standard,
-  onClick,
-}) => {
+                  label,
+                  color = C.COLORS.default,
+                  disabled,
+                  size = C.SIZE.medium,
+                  variant = C.VARIANT.contained,
+                  onClick
+                }) => {
+
+  const onButtonClicked = () => onClick();
+
   return (
     <MuiButton
-      onClick={onClick}
+      onClick={onButtonClicked}
       color={color}
       disabled={disabled}
       size={size}
